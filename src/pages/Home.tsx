@@ -60,7 +60,7 @@ export default function Home() {
         <div className="absolute inset-0">
           <img
             ref={heroParallaxRef}
-            src="/properties/murgeshpalya-65k/murgeshpalya-65k-03.jpeg"
+            src="/properties/godrej-lakeside/hero-bg.jpg"
             alt="Luxury property"
             className="w-full h-[120%] object-cover"
           />
