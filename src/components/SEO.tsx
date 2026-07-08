@@ -13,8 +13,10 @@ interface SEOProps {
   geoPosition?: string;
 }
 
+const CONSISTENT_TITLE = 'Trishna Properties — Premium Rentals in Bangalore';
+
 const defaultProps: SEOProps = {
-  title: 'Prishna Properties - Premium Real Estate in Bangalore',
+  title: CONSISTENT_TITLE,
   description: 'Find your dream home with Prishna Properties. Premium residential and commercial properties for rent and sale in Bangalore, India.',
   keywords: 'real estate, Bangalore properties, apartments for rent, houses for sale, residential properties, commercial real estate',
   image: 'https://prishnaproperties.com/og-image.jpg', // Replace with your actual image
@@ -26,7 +28,7 @@ const defaultProps: SEOProps = {
 };
 
 export const SEO: React.FC<SEOProps> = (props) => {
-  const { title, description, keywords, image, url, type, location, geoRegion, geoPosition } = {
+  const { description, keywords, image, url, type, location, geoRegion, geoPosition } = {
     ...defaultProps,
     ...props,
   };
@@ -34,24 +36,24 @@ export const SEO: React.FC<SEOProps> = (props) => {
   return (
     <Helmet>
       {/* Primary Meta Tags */}
-      <title>{title}</title>
-      <meta name="title" content={title} />
+      <title>{CONSISTENT_TITLE}</title>
+      <meta name="title" content={CONSISTENT_TITLE} />
       <meta name="description" content={description} />
       <meta name="keywords" content={keywords} />
 
       {/* Open Graph / Facebook */}
       <meta property="og:type" content={type} />
       <meta property="og:url" content={url} />
-      <meta property="og:title" content={title} />
+      <meta property="og:title" content={CONSISTENT_TITLE} />
       <meta property="og:description" content={description} />
       <meta property="og:image" content={image} />
-      <meta property="og:site_name" content="Prishna Properties" />
+      <meta property="og:site_name" content="Trishna Properties" />
       <meta property="og:locale" content="en_IN" />
 
       {/* Twitter */}
       <meta property="twitter:card" content="summary_large_image" />
       <meta property="twitter:url" content={url} />
-      <meta property="twitter:title" content={title} />
+      <meta property="twitter:title" content={CONSISTENT_TITLE} />
       <meta property="twitter:description" content={description} />
       <meta property="twitter:image" content={image} />
 
@@ -65,7 +67,7 @@ export const SEO: React.FC<SEOProps> = (props) => {
       <meta name="format-detection" content="telephone=no" />
       
       {/* Additional Meta Tags */}
-      <meta name="author" content="Prishna Properties" />
+      <meta name="author" content="Trishna Properties" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <meta name="robots" content="index, follow" />
       <meta name="googlebot" content="index, follow" />
@@ -78,7 +80,7 @@ export const SEO: React.FC<SEOProps> = (props) => {
         {JSON.stringify({
           "@context": "https://schema.org",
           "@type": "RealEstateAgent",
-          "name": "Prishna Properties",
+          "name": "Trishna Properties",
           "description": description,
           "url": url,
           "logo": image,

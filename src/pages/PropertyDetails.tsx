@@ -100,11 +100,11 @@ export default function PropertyDetails() {
         <ImageCarousel images={property.images} title={property.title} />
 
         {/* Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 mt-6 sm:mt-8">
           {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-4 sm:space-y-6">
             {/* Header */}
-            <div ref={headerRef} className="bg-white rounded-2xl shadow-card p-6 lg:p-8">
+            <div ref={headerRef} className="bg-white rounded-2xl shadow-card p-4 sm:p-6 lg:p-8">
               <div className="flex flex-wrap items-center gap-2 mb-3">
                 <span className={`px-3 py-1 rounded-full text-xs font-semibold text-white ${
                   property.type === 'rent' ? 'bg-brand-500' : 'bg-navy-900'
@@ -119,7 +119,7 @@ export default function PropertyDetails() {
                 )}
               </div>
 
-              <h1 className="text-2xl lg:text-3xl font-display font-bold text-navy-900 mb-2 tracking-wide">{property.title}</h1>
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-display font-bold text-navy-900 mb-2 tracking-wide">{property.title}</h1>
               <div className="flex items-center text-neutral-500 mb-4">
                 <MapPin className="h-4 w-4 mr-1.5 text-brand-500" />
                 <span className="text-sm">{property.location}</span>
@@ -127,7 +127,7 @@ export default function PropertyDetails() {
 
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-4 border-t border-neutral-100">
                 <div>
-                  <span className="text-3xl font-bold text-navy-900">
+                  <span className="text-2xl sm:text-3xl font-bold text-navy-900">
                     {formatPrice(property.price, property.type)}
                   </span>
                   {property.type === 'rent' && <span className="text-neutral-500 text-sm">/month</span>}
@@ -141,11 +141,11 @@ export default function PropertyDetails() {
             </div>
 
             {/* Key Specs */}
-            <div className="bg-white rounded-2xl shadow-card p-6 lg:p-8">
-              <h2 className="text-lg font-display font-bold text-navy-900 mb-5 tracking-wide">Property Details</h2>
-              <div ref={specsRef} className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            <div className="bg-white rounded-2xl shadow-card p-4 sm:p-6 lg:p-8">
+              <h2 className="text-base sm:text-lg font-display font-bold text-navy-900 mb-4 sm:mb-5 tracking-wide">Property Details</h2>
+              <div ref={specsRef} className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
                 {specs.map((spec) => (
-                  <div key={spec.label} className="flex items-center space-x-3 p-3 bg-neutral-50 rounded-xl">
+                  <div key={spec.label} className="flex items-center space-x-3 p-2.5 sm:p-3 bg-neutral-50 rounded-xl">
                     <spec.icon className="h-5 w-5 text-brand-500 flex-shrink-0" />
                     <div>
                       <div className="text-xs text-neutral-500">{spec.label}</div>
@@ -184,8 +184,8 @@ export default function PropertyDetails() {
                 {property.amenities.map((amenity, index) => {
                   const AmenityIcon = getAmenityIcon(amenity);
                   return (
-                    <div key={index} className="flex items-center space-x-2.5 text-sm text-neutral-700 p-2.5 rounded-xl bg-neutral-50 hover:bg-brand-50/50 transition-colors">
-                      <AmenityIcon className="h-4.5 w-4.5 text-brand-500 flex-shrink-0" />
+                    <div key={index} className="flex flex-col items-center justify-center text-sm text-neutral-700 p-3 rounded-xl bg-neutral-50 hover:bg-brand-50/50 transition-colors text-center">
+                      <AmenityIcon className="h-5 w-5 text-brand-500 mb-1.5" />
                       <span>{amenity}</span>
                     </div>
                   );

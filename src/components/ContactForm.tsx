@@ -18,26 +18,49 @@ export default function ContactForm({ propertyTitle, contactEmail }: ContactForm
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [submitError, setSubmitError] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setSubmitError(false);
     
-    // Send email using mailto url
-    const subject = encodeURIComponent(propertyTitle ? `Inquiry: ${propertyTitle}` : "Inquiry - Trishna Properties");
-    const body = encodeURIComponent(`Name: ${formData.name}\nPhone: ${formData.phone}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`);
-    
-    setTimeout(() => {
+    try {
+      // Send email using web3forms
+      const form = new FormData();
+      form.append('access_key', '4bfea069-13f8-43f2-b94b-5d5fd81364d8');
+      form.append('name', formData.name);
+      form.append('phone', formData.phone);
+      form.append('email', formData.email);
+      form.append('message', formData.message);
+      form.append('subject', propertyTitle ? `Inquiry: ${propertyTitle}` : "Inquiry - Trishna Properties");
+      form.append('to', contactEmail || 'trishnaproperties78@gmail.com');
+      
+      const response = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        body: form,
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        setIsSubmitting(false);
+        setSubmitSuccess(true);
+        setFormData({ name: '', phone: '', email: '', message: '' });
+        setTimeout(() => setSubmitSuccess(false), 6000);
+      } else {
+        throw new Error(result.message);
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
       setIsSubmitting(false);
-      setSubmitSuccess(true);
-      window.location.href = `mailto:${contactEmail || 'trishnaproperties78@gmail.com'}?subject=${subject}&body=${body}`;
-      setFormData({ name: '', phone: '', email: '', message: '' });
-      setTimeout(() => setSubmitSuccess(false), 6000);
-    }, 1200);
+      setSubmitError(true);
+      setTimeout(() => setSubmitError(false), 6000);
+    }
   };
 
   return (
@@ -57,8 +80,16 @@ export default function ContactForm({ propertyTitle, contactEmail }: ContactForm
             <div className="w-16 h-16 bg-brand-50 rounded-full flex items-center justify-center mx-auto mb-4">
               <CheckCircle className="h-8 w-8 text-brand-500" />
             </div>
-            <h4 className="text-lg font-semibold text-navy-900">Email Draft Created!</h4>
-            <p className="text-sm text-neutral-500 mt-2">Opening your mail application. We will review your query and reply soon.</p>
+            <h4 className="text-lg font-semibold text-navy-900">Message Sent!</h4>
+            <p className="text-sm text-neutral-500 mt-2">Thank you for your inquiry. We will get back to you soon.</p>
+          </div>
+        ) : submitError ? (
+          <div className="text-center py-8 animate-scale-in">
+            <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
+              <CheckCircle className="h-8 w-8 text-red-500" />
+            </div>
+            <h4 className="text-lg font-semibold text-navy-900">Error!</h4>
+            <p className="text-sm text-neutral-500 mt-2">Something went wrong. Please try again later.</p>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -118,7 +149,7 @@ export default function ContactForm({ propertyTitle, contactEmail }: ContactForm
               {isSubmitting ? (
                 <>
                   <Loader2 className="h-4 w-4 animate-spin text-white" />
-                  <span>Preparing Draft...</span>
+                  <span>Sending...</span>
                 </>
               ) : (
                 <>

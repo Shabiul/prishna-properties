@@ -8,19 +8,19 @@ export default function Footer() {
 
   return (
     <footer className="bg-navy-950 text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12 lg:py-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-10">
           {/* Brand */}
           <div className="sm:col-span-2 lg:col-span-1">
-            <Link to="/" className="flex items-center space-x-3 mb-5 group">
+            <Link to="/" className="flex items-center space-x-2.5 sm:space-x-3 mb-4 sm:mb-5 group">
               <img
                 src="/logo.jpeg"
                 alt="Trishna Properties"
-                className="h-11 w-11 rounded-xl object-contain border border-white/10 shadow-md group-hover:scale-105 transition-transform bg-white"
+                className="h-10 w-10 sm:h-11 sm:w-11 rounded-xl object-contain border border-white/10 shadow-md group-hover:scale-105 transition-transform bg-white"
               />
               <div>
-                <span className="text-xl font-display font-bold leading-tight block tracking-wider">Trishna</span>
-                <span className="text-[9px] font-semibold text-brand-500 uppercase tracking-widest">
+                <span className="text-lg sm:text-xl font-display font-bold leading-tight block tracking-wider">Trishna</span>
+                <span className="text-[8px] sm:text-[9px] font-semibold text-brand-500 uppercase tracking-widest">
                   Properties
                 </span>
               </div>
@@ -32,8 +32,8 @@ export default function Footer() {
 
           {/* Properties */}
           <div>
-            <h4 className="text-sm font-semibold text-neutral-200 uppercase tracking-wider mb-4">Properties</h4>
-            <ul className="space-y-2.5 text-sm">
+            <h4 className="text-sm font-semibold text-neutral-200 uppercase tracking-wider mb-3 sm:mb-4">Properties</h4>
+            <ul className="space-y-2 sm:space-y-2.5 text-sm">
               <li><Link to="/listings?location=Murgeshpalya" className="text-neutral-400 hover:text-brand-400 transition-colors">Murgeshpalya</Link></li>
               <li><Link to="/listings?location=CV+Raman+Nagar" className="text-neutral-400 hover:text-brand-400 transition-colors">CV Raman Nagar</Link></li>
               <li><Link to="/listings?location=GM+Palya" className="text-neutral-400 hover:text-brand-400 transition-colors">GM Palya</Link></li>
@@ -46,8 +46,8 @@ export default function Footer() {
 
           {/* Company */}
           <div>
-            <h4 className="text-sm font-semibold text-neutral-200 uppercase tracking-wider mb-4">Company</h4>
-            <ul className="space-y-2.5 text-sm">
+            <h4 className="text-sm font-semibold text-neutral-200 uppercase tracking-wider mb-3 sm:mb-4">Company</h4>
+            <ul className="space-y-2 sm:space-y-2.5 text-sm">
               <li><Link to="/" className="text-neutral-400 hover:text-brand-400 transition-colors">Home</Link></li>
               <li><Link to="/about" className="text-neutral-400 hover:text-brand-400 transition-colors">About Us</Link></li>
               <li><Link to="/listings" className="text-neutral-400 hover:text-brand-400 transition-colors">All Properties</Link></li>
@@ -57,21 +57,21 @@ export default function Footer() {
 
           {/* Contact */}
           <div>
-            <h4 className="text-sm font-semibold text-neutral-200 uppercase tracking-wider mb-4">Contact Us</h4>
-            <ul className="space-y-3 text-sm">
-              <li className="flex items-start space-x-3">
+            <h4 className="text-sm font-semibold text-neutral-200 uppercase tracking-wider mb-3 sm:mb-4">Contact Us</h4>
+            <ul className="space-y-2.5 sm:space-y-3 text-sm">
+              <li className="flex items-start space-x-2.5 sm:space-x-3">
                 <Mail className="h-4 w-4 text-brand-400 mt-0.5 flex-shrink-0" />
                 <a href="mailto:trishnaproperties78@gmail.com" className="text-neutral-400 hover:text-brand-400 transition-colors break-all">
                   trishnaproperties78@gmail.com
                 </a>
               </li>
-              <li className="flex items-start space-x-3">
+              <li className="flex items-start space-x-2.5 sm:space-x-3">
                 <Phone className="h-4 w-4 text-brand-400 mt-0.5 flex-shrink-0" />
                 <a href="tel:+919876543210" className="text-neutral-400 hover:text-brand-400 transition-colors">
                   +91 98765 43210
                 </a>
               </li>
-              <li className="flex items-start space-x-3">
+              <li className="flex items-start space-x-2.5 sm:space-x-3">
                 <MapPin className="h-4 w-4 text-brand-400 mt-0.5 flex-shrink-0" />
                 <a
                   href={mapsUrl}
@@ -88,11 +88,11 @@ export default function Footer() {
         </div>
 
         {/* Map */}
-        <div className="mt-10 lg:mt-12 rounded-2xl overflow-hidden border border-white/5 shadow-glass transition-all duration-300 hover:border-brand-500/30">
+        <div className="mt-8 sm:mt-10 lg:mt-12 rounded-2xl overflow-hidden border border-white/5 shadow-glass transition-all duration-300 hover:border-brand-500/30">
           <iframe
             src={mapsEmbed}
             title="Trishna Properties Office Location"
-            className="w-full h-48 sm:h-56 lg:h-64"
+            className="w-full h-44 sm:h-48 lg:h-64"
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
             style={{ border: 0, filter: 'grayscale(0.4) invert(0.02) contrast(1.1)' }}
@@ -101,7 +101,7 @@ export default function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="border-t border-white/5 mt-8 pt-6 flex flex-col sm:flex-row justify-between items-center gap-3">
+        <div className="border-t border-white/5 mt-6 sm:mt-8 pt-5 sm:pt-6 flex flex-col sm:flex-row justify-between items-center gap-2.5 sm:gap-3">
           <p className="text-neutral-500 text-sm text-center sm:text-left font-light">
             © {new Date().getFullYear()} Trishna Properties. All rights reserved.
           </p>

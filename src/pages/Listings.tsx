@@ -84,22 +84,22 @@ export default function Listings() {
       />
       {/* Header */}
       <div className="bg-white/80 backdrop-blur-md border-b border-neutral-100 sticky top-16 z-30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
           {/* Search + filter toggle */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <div className="flex-1 relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
+              <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-400" />
               <input
                 type="text"
                 placeholder="Search by title, location or area..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-11 pr-4 py-2.5 bg-neutral-50/80 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none text-sm transition-all placeholder-neutral-400"
+                className="w-full pl-9 sm:pl-11 pr-3 sm:pr-4 py-2.5 bg-neutral-50/80 border border-neutral-200 rounded-xl focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 outline-none text-sm transition-all placeholder-neutral-400"
               />
             </div>
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all border ${
+              className={`flex items-center space-x-1.5 sm:space-x-2 px-3 sm:px-4 py-2.5 rounded-xl text-sm font-semibold transition-all border ${
                 showFilters || activeFilterCount > 0
                   ? 'bg-brand-500 text-white border-brand-500 shadow-md shadow-brand-500/25'
                   : 'bg-neutral-50 border-neutral-200 text-neutral-700 hover:bg-neutral-100'
@@ -118,12 +118,12 @@ export default function Listings() {
           </div>
 
           {/* Type pills */}
-          <div className="flex items-center gap-2 mt-4">
+          <div className="flex items-center gap-1.5 sm:gap-2 mt-3 sm:mt-4 overflow-x-auto pb-1">
             {(['all', 'rent', 'sale'] as const).map(type => (
               <button
                 key={type}
                 onClick={() => setPropertyType(type)}
-                className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 ${
+                className={`px-3 sm:px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 flex-shrink-0 ${
                   propertyType === type
                     ? 'bg-navy-950 text-brand-400 border border-brand-500/20 shadow-md'
                     : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200 border border-transparent'
@@ -134,7 +134,7 @@ export default function Listings() {
             ))}
 
             {/* Sort dropdown */}
-            <div className="ml-auto relative">
+            <div className="ml-auto relative flex-shrink-0">
               <div className="flex items-center">
                 <select
                   value={sortBy}
@@ -153,8 +153,8 @@ export default function Listings() {
 
           {/* Expanded filters */}
           {showFilters && (
-            <div className="mt-4 pt-4 border-t border-neutral-100 animate-fade-in">
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-neutral-100 animate-fade-in">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
                 <div>
                   <label className="block text-xs font-medium text-neutral-500 uppercase tracking-wider mb-1.5">Location</label>
                   <select value={selectedLocation} onChange={(e) => setSelectedLocation(e.target.value)}
@@ -186,7 +186,7 @@ export default function Listings() {
 
           {/* Active filter chips */}
           {activeFilterCount > 0 && (
-            <div className="flex flex-wrap gap-2 mt-3">
+            <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-2.5 sm:mt-3">
               {selectedLocation !== 'all' && (
                 <span className="flex items-center gap-1 px-3 py-1 bg-brand-50 text-brand-600 text-xs font-medium rounded-full">
                   {selectedLocation}
@@ -205,23 +205,23 @@ export default function Listings() {
       </div>
 
       {/* Results */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <p className="text-sm text-neutral-500 mb-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <p className="text-sm text-neutral-500 mb-4 sm:mb-6">
           Showing <span className="font-semibold text-navy-900">{filteredProperties.length}</span> properties
           {selectedLocation !== 'all' ? ` in ${selectedLocation}` : ' in Bangalore'}
         </p>
 
         {filteredProperties.length > 0 ? (
-          <div ref={gridRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div ref={gridRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
             {filteredProperties.map((property) => (
               <PropertyCard key={property.id} property={property} />
             ))}
           </div>
         ) : (
-          <div className="text-center py-20">
-            <div className="text-5xl mb-4">🏠</div>
-            <h3 className="text-lg font-semibold text-navy-800 mb-2">No properties found</h3>
-            <p className="text-neutral-500 text-sm mb-6">Try adjusting your filters</p>
+          <div className="text-center py-16 sm:py-20">
+            <div className="text-4xl sm:text-5xl mb-3 sm:mb-4">🏠</div>
+            <h3 className="text-base sm:text-lg font-semibold text-navy-800 mb-1.5 sm:mb-2">No properties found</h3>
+            <p className="text-neutral-500 text-sm mb-4 sm:mb-6">Try adjusting your filters</p>
             <button onClick={clearFilters}
               className="text-brand-500 hover:text-brand-600 font-medium text-sm transition-colors">
               Clear all filters

@@ -80,7 +80,7 @@ export default function About() {
             </div>
             <div className="rounded-2xl overflow-hidden shadow-card-hover">
               <img
-                src="/properties/murgeshpalya-50k-1/murgeshpalya-50k-1-01.jpeg"
+                src="/properties/brigade-insignia/our-story.jpg"
                 alt="Premium Property"
                 className="w-full h-64 sm:h-80 object-cover"
               />
@@ -108,8 +108,8 @@ export default function About() {
               { icon: Star, title: 'Quality Interiors', desc: 'We list only well-maintained properties with modern fittings and clean interiors.' },
               { icon: Award, title: 'Fair Pricing', desc: 'Transparent pricing with no hidden charges. Rent and deposit clearly stated upfront.' },
             ].map(item => (
-              <div key={item.title} className="p-5 sm:p-6 rounded-2xl bg-neutral-50 hover:bg-white hover:shadow-card-hover transition-all duration-300 group">
-                <div className="w-11 h-11 sm:w-12 sm:h-12 bg-brand-50 rounded-xl flex items-center justify-center mb-4 sm:mb-5 group-hover:bg-brand-100 group-hover:scale-110 transition-all duration-300">
+              <div key={item.title} className="p-5 sm:p-6 rounded-2xl bg-neutral-50 hover:bg-white hover:shadow-card-hover transition-all duration-300 group text-center">
+                <div className="w-11 h-11 sm:w-12 sm:h-12 bg-brand-50 rounded-xl flex items-center justify-center mb-4 sm:mb-5 group-hover:bg-brand-100 group-hover:scale-110 transition-all duration-300 mx-auto">
                   <item.icon className="h-5 w-5 sm:h-6 sm:w-6 text-brand-500" />
                 </div>
                 <h3 className="text-sm sm:text-base font-semibold text-navy-900 mb-2">{item.title}</h3>

@@ -57,5 +57,11 @@ const amenityIconMap: Record<string, LucideIcon> = {
 };
 
 export function getAmenityIcon(amenity: string): LucideIcon {
-  return amenityIconMap[amenity] || ShieldCheck;
+  // Case-insensitive lookup
+  const normalizedAmenity = amenity.toLowerCase();
+  // Find matching key in amenityIconMap (case-insensitive)
+  const matchedKey = Object.keys(amenityIconMap).find(
+    key => key.toLowerCase() === normalizedAmenity
+  );
+  return matchedKey ? amenityIconMap[matchedKey] : ShieldCheck;
 }
