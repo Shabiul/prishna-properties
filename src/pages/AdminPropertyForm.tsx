@@ -1,0 +1,372 @@
+import { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { ArrowLeft, Plus, X, Save, Image, Upload } from 'lucide-react';
+import { usePropertyStore, isAdminAuthenticated } from '../stores/propertyStore';
+import type { Property } from '../data/properties';
+import { supabase } from '../lib/supabase';
+
+const FURNISHED_OPTIONS = ['fully', 'semi', 'unfurnished'] as const;
+const TYPE_OPTIONS = ['rent', 'sale'] as const;
+
+const emptyForm: Omit<Property, 'id'> = {
+  title: '', location: '', area_name: '', price: 0, type: 'rent',
+  bedrooms: 2, bathrooms: 2, area: 0, furnished: 'semi', deposit: '',
+  availability: 'Immediate', amenities: [], highlights: [], images: [],
+  description: '', contactEmail: 'trishnaproperties78@gmail.com', mapQuery: '',
+};
+
+export default function AdminPropertyForm() {
+  const { id } = useParams<{ id: string }>();
+  const isEdit = Boolean(id);
+  const navigate = useNavigate();
+  const { properties, addProperty, updateProperty } = usePropertyStore();
+
+  const [form, setForm] = useState<Omit<Property, 'id'>>(emptyForm);
+  const [amenityInput, setAmenityInput] = useState('');
+  const [highlightInput, setHighlightInput] = useState('');
+  const [imageInput, setImageInput] = useState('');
+  const [uploading, setUploading] = useState(false);
+  const [pendingImagePreviews, setPendingImagePreviews] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (!isAdminAuthenticated()) { navigate('/admin'); return; }
+    if (isEdit && id) {
+      const p = properties.find(p => p.id === id);
+      if (p) {
+        const { id: _id, ...rest } = p;
+        setForm(rest);
+      } else navigate('/admin/dashboard');
+    }
+  }, [id, isEdit, navigate, properties]);
+
+  const update = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) => {
+    setForm(prev => ({ ...prev, [key]: value }));
+  };
+
+  const addToList = (key: 'amenities' | 'highlights' | 'images', value: string) => {
+    if (!value.trim()) return;
+    setForm(prev => ({ ...prev, [key]: [...prev[key], value.trim()] }));
+  };
+
+  const removeFromList = (key: 'amenities' | 'highlights' | 'images', index: number) => {
+    setForm(prev => ({ ...prev, [key]: prev[key].filter((_, i) => i !== index) }));
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || [])
+    if (files.length === 0) return
+
+    // Generate previews immediately for better UX
+    const previews: string[] = []
+    for (const file of files) {
+      if (file.type.startsWith('image/')) {
+        previews.push(URL.createObjectURL(file))
+      }
+    }
+    setPendingImagePreviews(prev => [...prev, ...previews])
+    
+    setUploading(true)
+    const newImageUrls: string[] = []
+
+    try {
+      console.log('Uploading images to Supabase Storage...')
+      console.log('Supabase URL:', import.meta.env.VITE_SUPABASE_URL)
+
+      for (const file of files) {
+        console.log('Uploading file:', file.name)
+        
+        const fileExt = file.name.split('.').pop()
+        const fileName = `${crypto.randomUUID()}.${fileExt}`
+        const filePath = `images/${fileName}` // Add a prefix to organize images better
+
+        // Upload to Supabase Storage
+        const { error: uploadError, data } = await supabase.storage
+          .from('properties')
+          .upload(filePath, file, {
+            cacheControl: '3600',
+            upsert: false,
+          })
+
+        if (uploadError) {
+          console.error('Upload error details:', uploadError)
+          throw new Error(`Upload failed for ${file.name}: ${uploadError.message}`)
+        }
+
+        console.log('Upload successful:', data)
+
+        // Get public URL
+        const { data: urlData } = supabase.storage
+          .from('properties')
+          .getPublicUrl(filePath)
+
+        newImageUrls.push(urlData.publicUrl)
+      }
+
+      // Clear previews and add actual images
+      setPendingImagePreviews([])
+      setForm(prev => ({
+        ...prev,
+        images: [...prev.images, ...newImageUrls]
+      }))
+      
+      console.log('Successfully uploaded images:', newImageUrls)
+    } catch (err) {
+      console.error('Error uploading images:', err)
+      alert(`Error uploading images: ${err instanceof Error ? err.message : 'Unknown error'}`)
+      // Clear previews on error
+      setPendingImagePreviews([])
+    } finally {
+      setUploading(false)
+      e.target.value = ''
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.title || !form.location || !form.price) return;
+
+    try {
+      if (isEdit && id) {
+        await updateProperty(id, form);
+      } else {
+        await addProperty(form);
+      }
+      navigate('/admin/dashboard');
+    } catch (err) {
+      console.error('Error submitting property:', err)
+      alert('Error saving property')
+    }
+  };
+
+  if (!isAdminAuthenticated()) return null;
+
+  return (
+    <div className="min-h-screen bg-neutral-50">
+      {/* Header */}
+      <div className="bg-white border-b border-neutral-100 sticky top-0 z-40">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <button onClick={() => navigate('/admin/dashboard')} className="p-2 rounded-lg hover:bg-neutral-100 text-neutral-500">
+              <ArrowLeft className="h-5 w-5" />
+            </button>
+            <h1 className="text-lg font-display font-bold text-navy-900 tracking-wide">
+              {isEdit ? 'Edit Property' : 'Add New Property'}
+            </h1>
+          </div>
+          <button onClick={handleSubmit}
+            className="flex items-center gap-2 bg-brand-500 hover:bg-brand-600 text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-all hover:shadow-lg hover:shadow-brand-500/25">
+            <Save className="h-4 w-4" />
+            <span>{isEdit ? 'Update' : 'Create'}</span>
+          </button>
+        </div>
+      </div>
+
+      <form onSubmit={handleSubmit} className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+        {/* Basic Info */}
+        <section className="bg-white rounded-2xl shadow-sm border border-neutral-100 p-6">
+          <h2 className="text-sm font-semibold text-navy-900 uppercase tracking-wider mb-4">Basic Info</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="md:col-span-2">
+              <label className="block text-xs font-medium text-neutral-500 mb-1">Title *</label>
+              <input value={form.title} onChange={e => update('title', e.target.value)} required
+                className="w-full px-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500" />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-neutral-500 mb-1">Location *</label>
+              <input value={form.location} onChange={e => update('location', e.target.value)} required
+                className="w-full px-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500" />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-neutral-500 mb-1">Area Name</label>
+              <input value={form.area_name} onChange={e => update('area_name', e.target.value)}
+                className="w-full px-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500" />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-neutral-500 mb-1">Map Query</label>
+              <input value={form.mapQuery} onChange={e => update('mapQuery', e.target.value)} placeholder="e.g. Whitefield, Bangalore"
+                className="w-full px-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500" />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-neutral-500 mb-1">Description</label>
+              <textarea value={form.description} onChange={e => update('description', e.target.value)} rows={3}
+                className="w-full px-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 resize-none" />
+            </div>
+          </div>
+        </section>
+
+        {/* Pricing & Specs */}
+        <section className="bg-white rounded-2xl shadow-sm border border-neutral-100 p-6">
+          <h2 className="text-sm font-semibold text-navy-900 uppercase tracking-wider mb-4">Pricing & Specs</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div>
+              <label className="block text-xs font-medium text-neutral-500 mb-1">Price (₹) *</label>
+              <input type="number" value={form.price || ''} onChange={e => update('price', Number(e.target.value))} required
+                className="w-full px-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500" />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-neutral-500 mb-1">Type</label>
+              <select value={form.type} onChange={e => update('type', e.target.value as 'rent' | 'sale')}
+                className="w-full px-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500">
+                {TYPE_OPTIONS.map(t => <option key={t} value={t}>{t === 'rent' ? 'For Rent' : 'For Sale'}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-neutral-500 mb-1">Bedrooms</label>
+              <input type="number" value={form.bedrooms} onChange={e => update('bedrooms', Number(e.target.value))}
+                className="w-full px-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500" />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-neutral-500 mb-1">Bathrooms</label>
+              <input type="number" value={form.bathrooms} onChange={e => update('bathrooms', Number(e.target.value))}
+                className="w-full px-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500" />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-neutral-500 mb-1">Area (sqft)</label>
+              <input type="number" value={form.area || ''} onChange={e => update('area', Number(e.target.value))}
+                className="w-full px-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500" />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-neutral-500 mb-1">Furnished</label>
+              <select value={form.furnished} onChange={e => update('furnished', e.target.value as typeof form.furnished)}
+                className="w-full px-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500">
+                {FURNISHED_OPTIONS.map(f => <option key={f} value={f}>{f.charAt(0).toUpperCase() + f.slice(1)}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-neutral-500 mb-1">Deposit</label>
+              <input value={form.deposit} onChange={e => update('deposit', e.target.value)} placeholder="e.g. 2 Lakhs"
+                className="w-full px-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500" />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-neutral-500 mb-1">Availability</label>
+              <input value={form.availability} onChange={e => update('availability', e.target.value)}
+                className="w-full px-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500" />
+            </div>
+          </div>
+        </section>
+
+        {/* Images */}
+        <section className="bg-white rounded-2xl shadow-sm border border-neutral-100 p-6">
+          <h2 className="text-sm font-semibold text-navy-900 uppercase tracking-wider mb-4">Images</h2>
+          
+          {/* Upload Button */}
+          <div className="mb-4">
+            <label className="flex items-center justify-center gap-2 px-4 py-3 bg-brand-50 border-2 border-dashed border-brand-200 rounded-xl text-brand-600 cursor-pointer hover:bg-brand-100 transition-colors">
+              <Upload className="h-5 w-5" />
+              <span className="font-semibold text-sm">
+                {uploading ? 'Uploading...' : 'Upload Images'}
+              </span>
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleImageUpload}
+                disabled={uploading}
+                className="hidden"
+              />
+            </label>
+          </div>
+
+          <div className="flex gap-2 mb-3">
+            <input value={imageInput} onChange={e => setImageInput(e.target.value)} placeholder="Or paste image URL (e.g. /properties/folder/image.jpg)"
+              className="flex-1 px-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500" />
+            <button type="button" onClick={() => { addToList('images', imageInput); setImageInput(''); }}
+              className="px-4 py-2.5 bg-brand-500 text-white rounded-xl text-sm font-semibold hover:bg-brand-600 transition-colors">
+              <Plus className="h-4 w-4" />
+            </button>
+          </div>
+          
+          <div className="flex flex-wrap gap-3">
+            {pendingImagePreviews.map((preview, i) => (
+              <div key={`preview-${i}`} className="relative w-32 h-32 rounded-xl overflow-hidden bg-neutral-100 border border-brand-200 shadow-sm">
+                <img 
+                  src={preview} 
+                  alt={`Uploading ${i + 1}`} 
+                  className="w-full h-full object-cover opacity-75" 
+                />
+                <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                  <div className="animate-spin rounded-full h-8 w-8 border-2 border-white border-t-brand-500"></div>
+                </div>
+              </div>
+            ))}
+            {form.images.map((img, i) => (
+              <div key={i} className="relative group w-32 h-32 rounded-xl overflow-hidden bg-neutral-100 border border-neutral-200 shadow-sm">
+                <img 
+                  src={img} 
+                  alt={`Property image ${i + 1}`} 
+                  className="w-full h-full object-cover transition-transform hover:scale-105 duration-300" 
+                  onError={(e) => { 
+                    // Hide the broken image and show the fallback
+                    (e.target as HTMLImageElement).style.display = 'none';
+                    // Find and show the fallback div
+                    const parent = (e.target as HTMLImageElement).parentElement;
+                    const fallback = parent?.querySelector('.image-fallback');
+                    if (fallback) {
+                      (fallback as HTMLElement).style.display = 'flex';
+                    }
+                  }}
+                />
+                <div className="image-fallback absolute inset-0 flex items-center justify-center bg-neutral-100 hidden">
+                  <Image className="h-8 w-8 text-neutral-300" />
+                </div>
+                <button 
+                  type="button" 
+                  onClick={() => removeFromList('images', i)}
+                  className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-all hover:bg-red-600 hover:scale-110 shadow-md"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Amenities & Highlights */}
+        <section className="bg-white rounded-2xl shadow-sm border border-neutral-100 p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <h2 className="text-sm font-semibold text-navy-900 uppercase tracking-wider mb-3">Amenities</h2>
+              <div className="flex gap-2 mb-3">
+                <input value={amenityInput} onChange={e => setAmenityInput(e.target.value)} placeholder="e.g. Swimming Pool"
+                  onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addToList('amenities', amenityInput); setAmenityInput(''); } }}
+                  className="flex-1 px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500" />
+                <button type="button" onClick={() => { addToList('amenities', amenityInput); setAmenityInput(''); }}
+                  className="px-3 py-2 bg-brand-50 text-brand-500 rounded-lg text-sm font-semibold hover:bg-brand-100 transition-colors">
+                  <Plus className="h-4 w-4" />
+                </button>
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {form.amenities.map((a, i) => (
+                  <span key={i} className="flex items-center gap-1 px-2.5 py-1 bg-neutral-100 text-neutral-700 text-xs font-medium rounded-full">
+                    {a}
+                    <button type="button" onClick={() => removeFromList('amenities', i)}><X className="h-3 w-3" /></button>
+                  </span>
+                ))}
+              </div>
+            </div>
+            <div>
+              <h2 className="text-sm font-semibold text-navy-900 uppercase tracking-wider mb-3">Highlights</h2>
+              <div className="flex gap-2 mb-3">
+                <input value={highlightInput} onChange={e => setHighlightInput(e.target.value)} placeholder="e.g. Near metro station"
+                  onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addToList('highlights', highlightInput); setHighlightInput(''); } }}
+                  className="flex-1 px-3 py-2 bg-neutral-50 border border-neutral-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500" />
+                <button type="button" onClick={() => { addToList('highlights', highlightInput); setHighlightInput(''); }}
+                  className="px-3 py-2 bg-brand-50 text-brand-500 rounded-lg text-sm font-semibold hover:bg-brand-100 transition-colors">
+                  <Plus className="h-4 w-4" />
+                </button>
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {form.highlights.map((h, i) => (
+                  <span key={i} className="flex items-center gap-1 px-2.5 py-1 bg-neutral-100 text-neutral-700 text-xs font-medium rounded-full">
+                    {h}
+                    <button type="button" onClick={() => removeFromList('highlights', i)}><X className="h-3 w-3" /></button>
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      </form>
+    </div>
+  );
+}

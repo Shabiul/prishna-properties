@@ -1,8 +1,10 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import PropertyCard from '../components/PropertyCard';
-import { properties } from '../data/properties';
+import { usePropertyStore } from '../stores/propertyStore';
 import { Search, SlidersHorizontal, X, ChevronDown } from 'lucide-react';
+import { useScrollReveal } from '../hooks/useScrollReveal';
+import { SEO } from '../components/SEO';
 
 type SortOption = 'default' | 'price-asc' | 'price-desc' | 'area-desc';
 
@@ -18,6 +20,7 @@ export default function Listings() {
   const [bedrooms, setBedrooms] = useState<string>('all');
   const [sortBy, setSortBy] = useState<SortOption>('default');
   const [showFilters, setShowFilters] = useState(false);
+  const gridRef = useScrollReveal({ direction: 'up', stagger: 0.08 });
 
   useEffect(() => {
     setSearchTerm(searchParams.get('search') || '');
@@ -25,10 +28,16 @@ export default function Listings() {
     setPropertyType((searchParams.get('type') as 'rent' | 'sale') || 'all');
   }, [searchParams]);
 
+  const { properties, fetchProperties } = usePropertyStore();
+  
+  useEffect(() => {
+    fetchProperties()
+  }, [fetchProperties])
+
   const allLocations = useMemo(() => {
     const locs = [...new Set(properties.map(p => p.area_name))];
     return locs.sort();
-  }, []);
+  }, [properties]);
 
   const filteredProperties = useMemo(() => {
     let result = properties.filter((property) => {
@@ -64,6 +73,15 @@ export default function Listings() {
 
   return (
     <div className="min-h-screen bg-neutral-50/50">
+      <SEO
+        title="Properties for Rent & Sale - Prishna Properties Bangalore"
+        description="Browse all verified properties in Bangalore. Filter by location, price, bedrooms, and type. Find your perfect home with Prishna Properties."
+        keywords="properties for rent Bangalore, houses for sale Bangalore, Bangalore real estate listings, residential properties, commercial properties, apartments Bangalore"
+        type="website"
+        location="Bangalore, Karnataka, India"
+        geoRegion="IN-KA"
+        geoPosition="12.9716;77.5946"
+      />
       {/* Header */}
       <div className="bg-white/80 backdrop-blur-md border-b border-neutral-100 sticky top-16 z-30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
@@ -194,7 +212,7 @@ export default function Listings() {
         </p>
 
         {filteredProperties.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 stagger-children">
+          <div ref={gridRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {filteredProperties.map((property) => (
               <PropertyCard key={property.id} property={property} />
             ))}

@@ -1,16 +1,33 @@
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { properties } from '../data/properties';
+import { usePropertyStore } from '../stores/propertyStore';
 import ImageCarousel from '../components/ImageCarousel';
 import ContactForm from '../components/ContactForm';
 import PropertyCard from '../components/PropertyCard';
 import { Bed, Bath, Maximize, MapPin, CheckCircle, ArrowLeft, Mail, Phone, Share2, Heart, Building, Layers, Compass } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useScrollReveal } from '../hooks/useScrollReveal';
+import { getAmenityIcon } from '../lib/amenityIcons';
+import { SEO } from '../components/SEO';
 
 export default function PropertyDetails() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const property = properties.find((p) => p.id === id);
+  const { properties, fetchProperties, getPropertyById } = usePropertyStore();
+  
+  useEffect(() => {
+    fetchProperties()
+  }, [fetchProperties])
+  
+  const property = getPropertyById(id || '');
   const [isLiked, setIsLiked] = useState(false);
+
+  // Scroll reveal refs
+  const headerRef = useScrollReveal({ direction: 'up', distance: 30, stagger: 0.1 });
+  const specsRef = useScrollReveal({ direction: 'up', stagger: 0.06 });
+  const highlightsRef = useScrollReveal({ direction: 'up', stagger: 0.05 });
+  const descRef = useScrollReveal({ direction: 'up' });
+  const amenitiesRef = useScrollReveal({ direction: 'up', stagger: 0.04 });
+  const similarRef = useScrollReveal({ direction: 'up', stagger: 0.12 });
 
   if (!property) {
     return (
@@ -50,6 +67,16 @@ export default function PropertyDetails() {
 
   return (
     <div className="min-h-screen bg-neutral-50">
+      <SEO
+        title={`${property.title} - Prishna Properties Bangalore`}
+        description={`${property.title} in ${property.location}. ${property.type === 'rent' ? 'For Rent' : 'For Sale'} - ${property.bedrooms} bedrooms, ${property.bathrooms} bathrooms, ${property.area} sqft. Contact Prishna Properties today!`}
+        keywords={`${property.title}, ${property.location}, ${property.area_name}, properties ${property.type === 'rent' ? 'for rent' : 'for sale'} Bangalore, ${property.bedrooms} BHK Bangalore, real estate`}
+        type="website"
+        image={property.images[0]}
+        location={property.location}
+        geoRegion="IN-KA"
+        geoPosition="12.9716;77.5946"
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         {/* Back + Actions */}
         <div className="flex items-center justify-between mb-4">
@@ -77,7 +104,7 @@ export default function PropertyDetails() {
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6">
             {/* Header */}
-            <div className="bg-white rounded-2xl shadow-card p-6 lg:p-8">
+            <div ref={headerRef} className="bg-white rounded-2xl shadow-card p-6 lg:p-8">
               <div className="flex flex-wrap items-center gap-2 mb-3">
                 <span className={`px-3 py-1 rounded-full text-xs font-semibold text-white ${
                   property.type === 'rent' ? 'bg-brand-500' : 'bg-navy-900'
@@ -116,7 +143,7 @@ export default function PropertyDetails() {
             {/* Key Specs */}
             <div className="bg-white rounded-2xl shadow-card p-6 lg:p-8">
               <h2 className="text-lg font-display font-bold text-navy-900 mb-5 tracking-wide">Property Details</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+              <div ref={specsRef} className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                 {specs.map((spec) => (
                   <div key={spec.label} className="flex items-center space-x-3 p-3 bg-neutral-50 rounded-xl">
                     <spec.icon className="h-5 w-5 text-brand-500 flex-shrink-0" />
@@ -133,7 +160,7 @@ export default function PropertyDetails() {
             {property.highlights.length > 0 && (
               <div className="bg-white rounded-2xl shadow-card p-6 lg:p-8">
                 <h2 className="text-lg font-display font-bold text-navy-900 mb-4 tracking-wide">Highlights</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div ref={highlightsRef} className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {property.highlights.map((h, i) => (
                     <div key={i} className="flex items-start space-x-2.5">
                       <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" />
@@ -145,7 +172,7 @@ export default function PropertyDetails() {
             )}
 
             {/* Description */}
-            <div className="bg-white rounded-2xl shadow-card p-6 lg:p-8">
+            <div ref={descRef} className="bg-white rounded-2xl shadow-card p-6 lg:p-8">
               <h2 className="text-lg font-display font-bold text-navy-900 mb-4 tracking-wide">About This Property</h2>
               <p className="text-neutral-600 text-sm leading-relaxed">{property.description}</p>
             </div>
@@ -153,15 +180,36 @@ export default function PropertyDetails() {
             {/* Amenities */}
             <div className="bg-white rounded-2xl shadow-card p-6 lg:p-8">
               <h2 className="text-lg font-display font-bold text-navy-900 mb-5 tracking-wide">Amenities</h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {property.amenities.map((amenity, index) => (
-                  <div key={index} className="flex items-center space-x-2.5 text-sm text-neutral-700">
-                    <CheckCircle className="h-4 w-4 text-brand-500 flex-shrink-0" />
-                    <span>{amenity}</span>
-                  </div>
-                ))}
+              <div ref={amenitiesRef} className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                {property.amenities.map((amenity, index) => {
+                  const AmenityIcon = getAmenityIcon(amenity);
+                  return (
+                    <div key={index} className="flex items-center space-x-2.5 text-sm text-neutral-700 p-2.5 rounded-xl bg-neutral-50 hover:bg-brand-50/50 transition-colors">
+                      <AmenityIcon className="h-4.5 w-4.5 text-brand-500 flex-shrink-0" />
+                      <span>{amenity}</span>
+                    </div>
+                  );
+                })}
               </div>
             </div>
+
+            {/* Location Map */}
+            {property.mapQuery && (
+              <div className="bg-white rounded-2xl shadow-card p-6 lg:p-8">
+                <h2 className="text-lg font-display font-bold text-navy-900 mb-5 tracking-wide">Location</h2>
+                <div className="rounded-xl overflow-hidden border border-neutral-100" style={{ height: 300 }}>
+                  <iframe
+                    title="Property Location"
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    src={`https://www.google.com/maps?q=${encodeURIComponent(property.mapQuery)}&output=embed`}
+                  />
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Sidebar */}
@@ -198,7 +246,7 @@ export default function PropertyDetails() {
         {similarProperties.length > 0 && (
           <div className="mt-16 mb-8">
             <h2 className="text-2xl font-display font-bold text-navy-900 mb-6">Similar Properties</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div ref={similarRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {similarProperties.map(p => (
                 <PropertyCard key={p.id} property={p} />
               ))}

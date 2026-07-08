@@ -1,15 +1,38 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Search, Shield, Clock, Star, ArrowRight } from 'lucide-react';
 import PropertyCard from '../components/PropertyCard';
 import LocationCard from '../components/LocationCard';
 import StatsCounter from '../components/StatsCounter';
-import { properties, locations } from '../data/properties';
+import { locations } from '../data/properties';
+import { usePropertyStore } from '../stores/propertyStore';
+import { useScrollReveal, useSectionReveal, useParallax } from '../hooks/useScrollReveal';
+import { SEO } from '../components/SEO';
 
 export default function Home() {
-  const featuredProperties = properties.slice(0, 6);
+  const { properties: allProperties, fetchProperties } = usePropertyStore();
+
+  useEffect(() => {
+    fetchProperties()
+  }, [fetchProperties])
+  // Feature Brigade & Godrej premium properties
+  const featuredIds = ['550e8400-e29b-41d4-a716-446655440010', '550e8400-e29b-41d4-a716-446655440011', '550e8400-e29b-41d4-a716-446655440012', '550e8400-e29b-41d4-a716-446655440014', '550e8400-e29b-41d4-a716-446655440015']; // Brigade (10,11,12) + Godrej (14,15)
+  const featuredProperties = featuredIds
+    .map(id => allProperties.find(p => p.id === id))
+    .filter(Boolean) as typeof allProperties;
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
+
+  // Scroll-triggered reveal refs
+  const statsRef = useScrollReveal({ direction: 'up', stagger: 0.12 });
+  const locationsHeaderRef = useSectionReveal();
+  const locationsGridRef = useScrollReveal({ direction: 'up', stagger: 0.1 });
+  const featuredHeaderRef = useSectionReveal();
+  const featuredGridRef = useScrollReveal({ direction: 'up', stagger: 0.1 });
+  const whyHeaderRef = useSectionReveal();
+  const whyGridRef = useScrollReveal({ direction: 'up', stagger: 0.15 });
+  const ctaRef = useScrollReveal({ direction: 'up', distance: 50, duration: 0.9 });
+  const heroParallaxRef = useParallax<HTMLImageElement>(0.2);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,14 +45,24 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-neutral-50/50">
+      <SEO
+        title="Prishna Properties - Premium Real Estate in Bangalore"
+        description="Find your dream home with Prishna Properties. Premium residential and commercial properties for rent and sale in Bangalore, India. Browse verified listings in Murgeshpalya, CV Raman Nagar, GM Palya, and more."
+        keywords="real estate Bangalore, properties for rent Bangalore, houses for sale Bangalore, residential properties Bangalore, commercial real estate, Prishna Properties, Murgeshpalya, CV Raman Nagar, GM Palya, Kaggadasapura"
+        type="website"
+        location="Bangalore, Karnataka, India"
+        geoRegion="IN-KA"
+        geoPosition="12.9716;77.5946"
+      />
       {/* ─── HERO ─────────────────────────────── */}
       <section className="relative min-h-[85vh] flex items-center overflow-hidden">
         {/* Background */}
         <div className="absolute inset-0">
           <img
+            ref={heroParallaxRef}
             src="/properties/murgeshpalya-65k/murgeshpalya-65k-03.jpeg"
             alt="Luxury property"
-            className="w-full h-full object-cover"
+            className="w-full h-[120%] object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-navy-950/95 via-navy-950/70 to-navy-950/30" />
         </div>
@@ -89,7 +122,7 @@ export default function Home() {
       {/* ─── STATS BAR ─────────────────────────── */}
       <section className="py-10 bg-white border-b border-neutral-100">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+          <div ref={statsRef} className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
             <StatsCounter end={50} suffix="+" label="Properties Listed" />
             <StatsCounter end={200} suffix="+" label="Happy Families" />
             <StatsCounter end={6} label="Prime Locations" />
@@ -98,30 +131,10 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ─── EXPLORE LOCATIONS ─────────────────── */}
-      <section className="py-16 lg:py-20 bg-neutral-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-display font-bold text-navy-900 mb-3">
-              Explore by Location
-            </h2>
-            <p className="text-neutral-500 max-w-2xl mx-auto">
-              Browse properties in Bangalore's most desirable neighborhoods
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {locations.map((loc) => (
-              <LocationCard key={loc.name} {...loc} />
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ─── FEATURED PROPERTIES ──────────────── */}
       <section className="py-16 lg:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10 gap-4">
+          <div ref={featuredHeaderRef} className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10 gap-4">
             <div>
               <h2 className="text-3xl sm:text-4xl font-display font-bold text-navy-900 mb-2">
                 Featured Properties
@@ -137,9 +150,29 @@ export default function Home() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 stagger-children">
+          <div ref={featuredGridRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {featuredProperties.map((property) => (
               <PropertyCard key={property.id} property={property} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── EXPLORE LOCATIONS ─────────────────── */}
+      <section className="py-16 lg:py-20 bg-neutral-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div ref={locationsHeaderRef} className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl font-display font-bold text-navy-900 mb-3">
+              Explore by Location
+            </h2>
+            <p className="text-neutral-500 max-w-2xl mx-auto">
+              Browse properties in Bangalore's most desirable neighborhoods
+            </p>
+          </div>
+
+          <div ref={locationsGridRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {locations.map((loc) => (
+              <LocationCard key={loc.name} {...loc} />
             ))}
           </div>
         </div>
@@ -148,7 +181,7 @@ export default function Home() {
       {/* ─── WHY CHOOSE US ─────────────────────── */}
       <section className="py-16 lg:py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
+          <div ref={whyHeaderRef} className="text-center mb-12">
             <h2 className="text-3xl sm:text-4xl font-display font-bold text-navy-900 mb-3">
               Why Families Trust Us
             </h2>
@@ -157,7 +190,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+          <div ref={whyGridRef} className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
             {[
               { icon: Shield, title: 'Verified Properties', desc: 'Every property is personally inspected and verified by our team before listing. No surprises, no hidden issues.' },
               { icon: Clock, title: 'Quick Move-In', desc: 'Most properties are available for immediate occupancy. We handle paperwork so you can move in stress-free.' },
@@ -175,13 +208,57 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ─── FAQ SECTION (AEO OPTIMIZED) ───────── */}
+      <section className="py-16 lg:py-20 bg-neutral-50">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl font-display font-bold text-navy-900 mb-3">
+              Frequently Asked Questions
+            </h2>
+            <p className="text-neutral-500 max-w-2xl mx-auto">
+              Answers to common questions about finding and renting properties with Prishna Properties
+            </p>
+          </div>
+          
+          <div className="space-y-4">
+            {[
+              {
+                question: "What areas in Bangalore do you cover?",
+                answer: "We cover prime locations in Bangalore including Murgeshpalya, CV Raman Nagar, GM Palya, Kaggadasapura, Whitefield, Electronic City, and more. Our focus is on residential properties in well-connected neighborhoods with good access to amenities and employment hubs."
+              },
+              {
+                question: "Are your properties verified?",
+                answer: "Yes, every property listed on Prishna Properties is personally inspected and verified by our team before going live. We check for authenticity, documentation, amenities, and overall condition to ensure you get exactly what you see."
+              },
+              {
+                question: "What documents do I need to rent a property?",
+                answer: "Typically, you'll need identity proof (Aadhaar, PAN), address proof, income proof (salary slips, IT returns), passport-sized photos, and a security deposit. Specific requirements may vary by property, and our team will guide you through the entire process."
+              },
+              {
+                question: "How long does the rental process take?",
+                answer: "The rental process usually takes 2-7 days from the time you select a property. This includes documentation verification, agreement signing, and move-in. Most of our properties are available for immediate occupancy."
+              },
+              {
+                question: "Do you charge any brokerage fees?",
+                answer: "Our fee structure is transparent and clearly communicated upfront. For specific details about charges for a particular property, please contact our team. We believe in honest pricing with no hidden costs."
+              }
+            ].map((faq, idx) => (
+              <div key={idx} className="bg-white rounded-xl p-6 lg:p-7 shadow-sm border border-neutral-100">
+                <h3 className="text-lg font-semibold text-navy-900 mb-3">{faq.question}</h3>
+                <p className="text-neutral-600 leading-relaxed">{faq.answer}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ─── CTA BANNER ────────────────────────── */}
       <section className="py-16 lg:py-20 bg-gradient-to-br from-navy-900 to-navy-950 relative overflow-hidden">
         <div className="absolute inset-0 opacity-5">
           <div className="absolute top-0 right-0 w-96 h-96 bg-brand-500 rounded-full blur-3xl" />
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-brand-400 rounded-full blur-3xl" />
         </div>
-        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div ref={ctaRef} className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl sm:text-4xl font-display font-bold text-white mb-4">
             Ready to Find Your Dream Home?
           </h2>

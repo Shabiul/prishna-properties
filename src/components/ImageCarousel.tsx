@@ -54,6 +54,7 @@ export default function ImageCarousel({ images, title }: ImageCarouselProps) {
   }, [isLightbox, nextSlide, prevSlide]);
 
   const displayImages = images.slice(0, 5);
+  const useSlideLayout = images.length < 5;
 
   return (
     <>
@@ -104,64 +105,120 @@ export default function ImageCarousel({ images, title }: ImageCarouselProps) {
         </button>
       </div>
 
-      {/* ── TABLET/DESKTOP: Grid Gallery ── */}
+      {/* ── TABLET/DESKTOP: Conditional Layout ── */}
       <div className="hidden sm:block">
-        <div className="grid grid-cols-4 grid-rows-2 gap-2.5 rounded-2xl overflow-hidden h-[340px] md:h-[400px] lg:h-[440px] shadow-card">
-          {/* Main large image */}
-          <div
-            className="col-span-2 row-span-2 relative cursor-pointer group overflow-hidden"
-            onClick={() => setIsLightbox(true)}
+        {useSlideLayout ? (
+          // Slide Carousel Layout (for <5 images)
+          <div 
+            ref={carouselRef}
+            className="relative aspect-[4/3] md:aspect-[16/10] lg:aspect-[16/9] rounded-2xl overflow-hidden bg-neutral-100 shadow-card"
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
           >
-            {!loadedImages.has(0) && <div className="absolute inset-0 skeleton bg-neutral-100" />}
+            {/* Main Image */}
             <img
-              src={images[0]}
-              alt={`${title} - Main`}
-              className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-700 ease-out"
-              onLoad={() => handleImageLoad(0)}
+              src={images[currentIndex]}
+              alt={`${title} - ${currentIndex + 1}`}
+              className="w-full h-full object-cover transition-all duration-500 ease-out"
+              key={currentIndex}
+              onLoad={() => handleImageLoad(currentIndex)}
             />
-            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
-            <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/90 backdrop-blur-md rounded-xl p-2.5 shadow-sm hover:scale-105 transition-all">
+
+            {/* Nav arrows */}
+            {images.length > 1 && (
+              <>
+                <button onClick={prevSlide}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 p-3 bg-white/90 backdrop-blur rounded-xl shadow-sm hover:bg-white hover:scale-110 transition-all">
+                  <ChevronLeft className="h-5 w-5 text-navy-800" />
+                </button>
+                <button onClick={nextSlide}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-white/90 backdrop-blur rounded-xl shadow-sm hover:bg-white hover:scale-110 transition-all">
+                  <ChevronRight className="h-5 w-5 text-navy-800" />
+                </button>
+              </>
+            )}
+
+            {/* Counter */}
+            <div className="absolute bottom-4 right-4 px-3.5 py-1.5 bg-black/70 backdrop-blur text-white text-sm font-semibold rounded-xl">
+              {currentIndex + 1} / {images.length}
+            </div>
+
+            {/* Lightbox Trigger */}
+            <button onClick={() => setIsLightbox(true)}
+              className="absolute bottom-4 left-4 p-2.5 bg-white/90 backdrop-blur-md rounded-xl shadow-sm hover:bg-white hover:scale-105 transition-all flex items-center gap-2">
               <ZoomIn className="h-4.5 w-4.5 text-navy-800" />
+              <span className="text-sm font-semibold text-navy-800">View all</span>
+            </button>
+
+            {/* Thumbnail dots/strip */}
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2">
+              {images.map((_, i) => (
+                <button key={i} onClick={() => setCurrentIndex(i)}
+                  className={`w-2.5 h-2.5 rounded-full transition-all ${i === currentIndex ? 'bg-brand-500 w-8' : 'bg-white/70 hover:bg-white'}`} />
+              ))}
             </div>
           </div>
-
-          {/* Smaller images */}
-          {displayImages.slice(1, 5).map((image, idx) => {
-            const index = idx + 1;
-            const isLast = index === displayImages.length - 1 && images.length > 5;
-            return (
-              <div
-                key={index}
-                className="relative cursor-pointer group overflow-hidden"
-                onClick={() => { setCurrentIndex(index); setIsLightbox(true); }}
-              >
-                {!loadedImages.has(index) && <div className="absolute inset-0 skeleton bg-neutral-100" />}
-                <img
-                  src={image}
-                  alt={`${title} - ${index + 1}`}
-                  className="w-full h-full object-cover group-hover:scale-[1.05] transition-transform duration-700 ease-out"
-                  onLoad={() => handleImageLoad(index)}
-                />
-                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
-                {isLast && (
-                  <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px] flex items-center justify-center">
-                    <span className="text-white font-display font-bold text-xl tracking-wider">+{images.length - 5}</span>
-                  </div>
-                )}
+        ) : (
+          // Grid Layout (for 5+ images)
+          <div className="grid grid-cols-4 grid-rows-2 gap-2.5 rounded-2xl overflow-hidden h-[340px] md:h-[400px] lg:h-[440px] shadow-card">
+            {/* Main large image */}
+            <div
+              className="col-span-2 row-span-2 relative cursor-pointer group overflow-hidden"
+              onClick={() => setIsLightbox(true)}
+            >
+              {!loadedImages.has(0) && <div className="absolute inset-0 skeleton bg-neutral-100" />}
+              <img
+                src={images[0]}
+                alt={`${title} - Main`}
+                className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-700 ease-out"
+                onLoad={() => handleImageLoad(0)}
+              />
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
+              <div className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white/90 backdrop-blur-md rounded-xl p-2.5 shadow-sm hover:scale-105 transition-all">
+                <ZoomIn className="h-4.5 w-4.5 text-navy-800" />
               </div>
-            );
-          })}
+            </div>
 
-          {/* Fill empty slots */}
-          {displayImages.length < 5 && Array.from({ length: 5 - displayImages.length }).map((_, i) => (
-            <div key={`empty-${i}`} className="bg-neutral-100" />
-          ))}
-        </div>
+            {/* Smaller images */}
+            {displayImages.slice(1, 5).map((image, idx) => {
+              const index = idx + 1;
+              const isLast = index === displayImages.length - 1 && images.length > 5;
+              return (
+                <div
+                  key={index}
+                  className="relative cursor-pointer group overflow-hidden"
+                  onClick={() => { setCurrentIndex(index); setIsLightbox(true); }}
+                >
+                  {!loadedImages.has(index) && <div className="absolute inset-0 skeleton bg-neutral-100" />}
+                  <img
+                    src={image}
+                    alt={`${title} - ${index + 1}`}
+                    className="w-full h-full object-cover group-hover:scale-[1.05] transition-transform duration-700 ease-out"
+                    onLoad={() => handleImageLoad(index)}
+                  />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
+                  {isLast && (
+                    <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px] flex items-center justify-center">
+                      <span className="text-white font-display font-bold text-xl tracking-wider">+{images.length - 5}</span>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
 
-        <button onClick={() => setIsLightbox(true)}
-          className="mt-3.5 text-sm font-semibold text-brand-500 hover:text-brand-600 transition-colors uppercase tracking-wider">
-          View all {images.length} photos →
-        </button>
+            {/* Fill empty slots */}
+            {displayImages.length < 5 && Array.from({ length: 5 - displayImages.length }).map((_, i) => (
+              <div key={`empty-${i}`} className="bg-neutral-100" />
+            ))}
+          </div>
+        )}
+
+        {!useSlideLayout && (
+          <button onClick={() => setIsLightbox(true)}
+            className="mt-3.5 text-sm font-semibold text-brand-500 hover:text-brand-600 transition-colors uppercase tracking-wider">
+            View all {images.length} photos →
+          </button>
+        )}
       </div>
 
       {/* ── LIGHTBOX ── */}

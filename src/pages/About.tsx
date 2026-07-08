@@ -1,14 +1,34 @@
 import ContactForm from '../components/ContactForm';
 import StatsCounter from '../components/StatsCounter';
 import { Shield, Users, MapPin, Clock, Star, Award, ExternalLink } from 'lucide-react';
+import { useScrollReveal, useSectionReveal } from '../hooks/useScrollReveal';
+import { SEO } from '../components/SEO';
 
 export default function About() {
   const address = '31, GM Palya Main Rd, KG Colony, GM Palya, C V Raman Nagar, Bengaluru, Karnataka 560075';
   const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
   const mapsEmbed = `https://www.google.com/maps?q=${encodeURIComponent(address)}&output=embed`;
 
+  // Scroll reveal refs
+  const statsRef = useScrollReveal({ direction: 'up', stagger: 0.12 });
+  const storyRef = useScrollReveal({ direction: 'up', stagger: 0.15 });
+  const diffHeaderRef = useSectionReveal();
+  const diffGridRef = useScrollReveal({ direction: 'up', stagger: 0.1 });
+  const officeHeaderRef = useSectionReveal();
+  const officeRef = useScrollReveal({ direction: 'up', stagger: 0.15 });
+  const contactRef = useScrollReveal({ direction: 'up', stagger: 0.12 });
+
   return (
     <div className="min-h-screen">
+      <SEO
+        title="About Us - Prishna Properties Bangalore"
+        description="Learn about Prishna Properties, your trusted partner for premium homes in Bangalore. We offer verified properties, exceptional service, and a seamless rental and sale experience."
+        keywords="Prishna Properties, about real estate Bangalore, property management Bangalore, trusted realtor Bangalore, GM Palya, Bengaluru"
+        type="website"
+        location="Bengaluru, Karnataka, India"
+        geoRegion="IN-KA"
+        geoPosition="12.9716;77.5946"
+      />
       {/* Hero */}
       <section className="relative py-16 sm:py-20 lg:py-28 bg-gradient-to-br from-navy-900 to-navy-950 overflow-hidden">
         <div className="absolute inset-0 opacity-5">
@@ -31,7 +51,7 @@ export default function About() {
       {/* Stats */}
       <section className="py-8 sm:py-10 bg-white border-b border-neutral-100 -mt-1">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
+          <div ref={statsRef} className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
             <StatsCounter end={50} suffix="+" label="Properties Listed" />
             <StatsCounter end={200} suffix="+" label="Happy Families" />
             <StatsCounter end={6} label="Prime Locations" />
@@ -43,7 +63,7 @@ export default function About() {
       {/* Our Story */}
       <section className="py-12 sm:py-16 lg:py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+          <div ref={storyRef} className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             <div>
               <h2 className="text-2xl sm:text-3xl font-display font-bold text-navy-900 mb-5 sm:mb-6">Our Story</h2>
               <div className="space-y-4 text-neutral-600 text-sm sm:text-base leading-relaxed">
@@ -72,14 +92,14 @@ export default function About() {
       {/* What Makes Us Different */}
       <section className="py-12 sm:py-16 lg:py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8 sm:mb-12">
+          <div ref={diffHeaderRef} className="text-center mb-8 sm:mb-12">
             <h2 className="text-2xl sm:text-3xl font-display font-bold text-navy-900 mb-3">What Makes Us Different</h2>
             <p className="text-neutral-500 max-w-2xl mx-auto text-sm sm:text-base">
               We go above and beyond to ensure every family finds the perfect home
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div ref={diffGridRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {[
               { icon: Shield, title: 'Verified Listings', desc: 'Every property is personally visited and verified. We check legality, condition, and amenities.' },
               { icon: Users, title: 'Dedicated Support', desc: 'A dedicated property manager assists you from search to move-in and throughout your stay.' },
@@ -103,12 +123,12 @@ export default function About() {
       {/* Office & Map Section */}
       <section className="py-12 sm:py-16 lg:py-20 bg-neutral-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8 sm:mb-12">
+          <div ref={officeHeaderRef} className="text-center mb-8 sm:mb-12">
             <h2 className="text-2xl sm:text-3xl font-display font-bold text-navy-900 mb-3">Visit Our Office</h2>
             <p className="text-neutral-500 text-sm sm:text-base">Come meet us in person — we'd love to help you find your dream home</p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-8">
+          <div ref={officeRef} className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-8">
             {/* Map */}
             <div className="lg:col-span-3 rounded-2xl overflow-hidden shadow-card border border-neutral-100 bg-white">
               <iframe
@@ -162,7 +182,7 @@ export default function About() {
       {/* Contact Section */}
       <section className="py-12 sm:py-16 lg:py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
+          <div ref={contactRef} className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
             <div>
               <h2 className="text-2xl sm:text-3xl font-display font-bold text-navy-900 mb-4">Get in Touch</h2>
               <p className="text-neutral-600 mb-6 sm:mb-8 leading-relaxed text-sm sm:text-base">
