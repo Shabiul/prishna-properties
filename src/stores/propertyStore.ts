@@ -88,36 +88,13 @@ export const usePropertyStore = create<PropertyStore>((set, get) => ({
   },
 
   fetchProperties: async () => {
-    set({ loading: true, error: null })
+    set({ loading: true, error: null });
     try {
-      // First check if we have properties in Supabase
-      const { data: supabaseProperties, error } = await supabase
-        .from('properties')
-        .select('*')
-
-      if (error) {
-        // If no table or error, use default properties
-        console.log('Using default properties:', error)
-        set({ properties: defaultProperties, loading: false })
-        return
-      }
-
-      if (supabaseProperties.length === 0) {
-        // If no properties in Supabase, insert defaults
-        const { error: insertError } = await supabase
-          .from('properties')
-          .insert(toSnakeCase(defaultProperties))
-        
-        if (insertError) {
-          console.error('Error inserting default properties:', insertError)
-        }
-        set({ properties: defaultProperties, loading: false })
-      } else {
-        set({ properties: toCamelCase(supabaseProperties) as Property[], loading: false })
-      }
+      // Use default properties directly
+      set({ properties: defaultProperties, loading: false });
     } catch (err) {
-      console.error('Error fetching properties:', err)
-      set({ properties: defaultProperties, loading: false, error: 'Failed to fetch properties' })
+      console.error('Error fetching properties:', err);
+      set({ properties: defaultProperties, loading: false, error: 'Failed to fetch properties' });
     }
   },
 
