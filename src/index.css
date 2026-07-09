@@ -242,3 +242,6 @@ html, body {
     @apply font-sans;
   }
 }
+[class*="trae"], [id*="trae"] {
+  display: none !important;
+}
