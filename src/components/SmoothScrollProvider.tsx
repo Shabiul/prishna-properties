@@ -1,5 +1,5 @@
 import { useEffect, useRef, createContext, useContext } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigationType } from "react-router-dom";
 import Lenis from "lenis";
 import { gsap, ScrollTrigger } from "../lib/gsap";
 
@@ -25,6 +25,7 @@ export let lenisInstance: Lenis | null = null;
 export default function SmoothScrollProvider({ children }: { children: React.ReactNode }) {
   const lenisRef = useRef<Lenis | null>(null);
   const location = useLocation();
+  const navigationType = useNavigationType(); // "POP" = back/forward, "PUSH" = new navigation
 
   useEffect(() => {
     // Create Lenis instance with premium feel
@@ -63,18 +64,27 @@ export default function SmoothScrollProvider({ children }: { children: React.Rea
     };
   }, []);
 
-  // ── Reset scroll on route change ──
+  // ── Handle anchor scrolling on route change ──
   useEffect(() => {
     const lenis = lenisRef.current;
     if (lenis) {
       // Small delay to let new route DOM render
       requestAnimationFrame(() => {
-        lenis.scrollTo(0, { immediate: true });
-        // Refresh ScrollTrigger after route change
+        if (location.hash) {
+          // Scroll to anchor
+          const targetElement = document.querySelector(location.hash);
+          if (targetElement) {
+            lenis.scrollTo(targetElement, { offset: -80 }); // Offset for fixed navbar
+          }
+        } else if (navigationType === "PUSH") {
+          // Only scroll to top on new navigation without anchor
+          lenis.scrollTo(0, { immediate: true });
+        }
+        // Refresh ScrollTrigger after route change regardless
         ScrollTrigger.refresh();
       });
     }
-  }, [location.pathname]);
+  }, [location.pathname, location.hash, navigationType]);
 
   // ── scrollTo helper ──
   const scrollTo: SmoothScrollContextType["scrollTo"] = (target, options) => {

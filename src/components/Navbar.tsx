@@ -45,7 +45,7 @@ export default function Navbar() {
             : 'bg-white/95 backdrop-blur-sm'
         }`}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16 lg:h-20">
             {/* Logo */}
             <Link to="/" className="flex items-center space-x-3 group flex-shrink-0">
@@ -98,7 +98,7 @@ export default function Navbar() {
                 <span className="hidden lg:inline">+91 98765 43210</span>
               </a>
               <Link
-                to="/about"
+                to="/about#contact"
                 className="bg-brand-500 hover:bg-brand-600 text-white text-sm font-bold px-6 py-2.5 rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-brand-500/20 active:scale-95"
               >
                 Contact Us
@@ -174,7 +174,7 @@ export default function Navbar() {
                 <span className="text-sm font-medium">+91 98765 43210</span>
               </a>
               <Link
-                to="/about"
+                to="/about#contact"
                 className="block mt-3 text-center bg-brand-500 hover:bg-brand-600 text-white font-semibold py-3.5 rounded-xl transition-colors"
               >
                 Contact Us

@@ -86,7 +86,7 @@ export default function Listings() {
       />
       {/* Header */}
       <div className="bg-white/80 backdrop-blur-md border-b border-neutral-100 sticky top-16 z-30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-4">
           {/* Search + filter toggle */}
           <div className="flex items-center gap-2 sm:gap-3">
             <div className="flex-1 relative">
@@ -207,7 +207,7 @@ export default function Listings() {
       </div>
 
       {/* Results */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-8">
         {loading ? (
           <div className="text-center py-16 sm:py-20">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-brand-500 mx-auto mb-4"></div>

@@ -8,7 +8,7 @@ export default function Footer() {
 
   return (
     <footer className="bg-navy-950 text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12 lg:py-16">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-10 sm:py-12 lg:py-16">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-10">
           {/* Brand */}
           <div className="sm:col-span-2 lg:col-span-1">
@@ -51,7 +51,6 @@ export default function Footer() {
               <li><Link to="/" className="text-neutral-400 hover:text-brand-400 transition-colors">Home</Link></li>
               <li><Link to="/about" className="text-neutral-400 hover:text-brand-400 transition-colors">About Us</Link></li>
               <li><Link to="/listings" className="text-neutral-400 hover:text-brand-400 transition-colors">All Properties</Link></li>
-              <li><Link to="/about" className="text-neutral-400 hover:text-brand-400 transition-colors">Contact</Link></li>
             </ul>
           </div>
 
@@ -105,9 +104,19 @@ export default function Footer() {
           <p className="text-neutral-500 text-sm text-center sm:text-left font-light">
             © {new Date().getFullYear()} Trishna Properties. All rights reserved.
           </p>
-          <p className="text-neutral-600 text-xs font-light">
-            Made with ❤️ in Bangalore
-          </p>
+          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4">
+            <p className="text-neutral-600 text-xs font-light">
+              Made with ❤️ in Bangalore
+            </p>
+            <a
+              href="https://naazailabs.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-neutral-500 hover:text-brand-400 text-xs font-light transition-colors"
+            >
+              Developed by Naazai Labs
+            </a>
+          </div>
         </div>
       </div>
     </footer>

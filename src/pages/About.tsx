@@ -34,7 +34,7 @@ export default function About() {
         <div className="absolute inset-0 opacity-5">
           <div className="absolute top-10 right-10 w-96 h-96 bg-brand-500 rounded-full blur-3xl" />
         </div>
-        <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div className="relative max-w-4xl mx-auto px-3 sm:px-6 lg:px-8 text-center">
           <span className="inline-block px-3 py-1 bg-brand-500/20 text-brand-300 text-sm font-medium rounded-full mb-6">
             About Trishna
           </span>
@@ -50,7 +50,7 @@ export default function About() {
 
       {/* Stats */}
       <section className="py-8 sm:py-10 bg-white border-b border-neutral-100 -mt-1">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-5xl mx-auto px-3 sm:px-6 lg:px-8">
           <div ref={statsRef} className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
             <StatsCounter end={50} suffix="+" label="Properties Listed" />
             <StatsCounter end={200} suffix="+" label="Happy Families" />
@@ -62,7 +62,7 @@ export default function About() {
 
       {/* Our Story */}
       <section className="py-12 sm:py-16 lg:py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
           <div ref={storyRef} className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             <div>
               <h2 className="text-2xl sm:text-3xl font-display font-bold text-navy-900 mb-5 sm:mb-6">Our Story</h2>
@@ -91,7 +91,7 @@ export default function About() {
 
       {/* What Makes Us Different */}
       <section className="py-12 sm:py-16 lg:py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
           <div ref={diffHeaderRef} className="text-center mb-8 sm:mb-12">
             <h2 className="text-2xl sm:text-3xl font-display font-bold text-navy-900 mb-3">What Makes Us Different</h2>
             <p className="text-neutral-500 max-w-2xl mx-auto text-sm sm:text-base">
@@ -122,7 +122,7 @@ export default function About() {
 
       {/* Office & Map Section */}
       <section className="py-12 sm:py-16 lg:py-20 bg-neutral-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
           <div ref={officeHeaderRef} className="text-center mb-8 sm:mb-12">
             <h2 className="text-2xl sm:text-3xl font-display font-bold text-navy-900 mb-3">Visit Our Office</h2>
             <p className="text-neutral-500 text-sm sm:text-base">Come meet us in person — we'd love to help you find your dream home</p>
@@ -180,8 +180,8 @@ export default function About() {
       </section>
 
       {/* Contact Section */}
-      <section className="py-12 sm:py-16 lg:py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="contact" className="py-12 sm:py-16 lg:py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
           <div ref={contactRef} className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
             <div>
               <h2 className="text-2xl sm:text-3xl font-display font-bold text-navy-900 mb-4">Get in Touch</h2>

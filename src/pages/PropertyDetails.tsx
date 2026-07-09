@@ -94,7 +94,7 @@ export default function PropertyDetails() {
         geoRegion="IN-KA"
         geoPosition="12.9716;77.5946"
       />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4">
         {/* Back + Actions */}
         <div className="flex items-center justify-between mb-4">
           <button onClick={() => navigate(-1)}

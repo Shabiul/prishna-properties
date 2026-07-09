@@ -67,7 +67,7 @@ export default function Home() {
           <div className="absolute inset-0 bg-gradient-to-r from-navy-950/95 via-navy-950/70 to-navy-950/30" />
         </div>
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 w-full">
+        <div className="relative max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-12 sm:py-20 w-full">
           <div className="max-w-2xl animate-fade-in-up">
             <span className="inline-block px-3 sm:px-4 py-1.5 bg-brand-500/25 border border-brand-500/25 text-brand-300 text-[10px] sm:text-xs font-semibold uppercase tracking-widest rounded-full mb-4 sm:mb-6 backdrop-blur-md">
               Premium Properties in Bangalore
@@ -273,7 +273,7 @@ export default function Home() {
               Browse Properties
             </Link>
             <Link
-              to="/about"
+              to="/about#contact"
               className="bg-white/10 hover:bg-white/20 backdrop-blur-md text-white font-semibold px-6 sm:px-8 py-2.5 sm:py-3.5 rounded-xl transition-all border border-white/10 text-sm"
             >
               Contact Us
