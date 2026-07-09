@@ -70,7 +70,7 @@ export default function PropertyDetails() {
       <SEO
         title={`${property.title} - Prishna Properties Bangalore`}
         description={`${property.title} in ${property.location}. ${property.type === 'rent' ? 'For Rent' : 'For Sale'} - ${property.bedrooms} bedrooms, ${property.bathrooms} bathrooms, ${property.area} sqft. Contact Prishna Properties today!`}
-        keywords={`${property.title}, ${property.location}, ${property.area_name}, properties ${property.type === 'rent' ? 'for rent' : 'for sale'} Bangalore, ${property.bedrooms} BHK Bangalore, real estate`}
+        keywords={`${property.title}, ${property.location}, ${property.areaName}, properties ${property.type === 'rent' ? 'for rent' : 'for sale'} Bangalore, ${property.bedrooms} BHK Bangalore, real estate`}
         type="website"
         image={property.images[0]}
         location={property.location}

@@ -119,11 +119,11 @@ export default function AdminDashboard() {
                           <Link to={`/listings/${p.id}`} className="text-sm font-semibold text-navy-900 hover:text-brand-500 transition-colors truncate block">
                             {p.title}
                           </Link>
-                          <p className="text-xs text-neutral-500 md:hidden">{p.area_name}</p>
+                          <p className="text-xs text-neutral-500 md:hidden">{p.areaName}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-sm text-neutral-600 hidden md:table-cell">{p.area_name}</td>
+                    <td className="px-4 py-3 text-sm text-neutral-600 hidden md:table-cell">{p.areaName}</td>
                     <td className="px-4 py-3 text-sm font-semibold text-navy-900">{formatPrice(p.price, p.type)}</td>
                     <td className="px-4 py-3 hidden sm:table-cell">
                       <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${p.type === 'rent' ? 'bg-brand-50 text-brand-600' : 'bg-navy-950/5 text-navy-900'}`}>
