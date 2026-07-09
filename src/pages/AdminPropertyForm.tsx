@@ -9,7 +9,7 @@ const FURNISHED_OPTIONS = ['fully', 'semi', 'unfurnished'] as const;
 const TYPE_OPTIONS = ['rent', 'sale'] as const;
 
 const emptyForm: Omit<Property, 'id'> = {
-  title: '', location: '', area_name: '', price: 0, type: 'rent',
+  title: '', location: '', areaName: '', price: 0, type: 'rent',
   bedrooms: 2, bathrooms: 2, area: 0, furnished: 'semi', deposit: '',
   availability: 'Immediate', amenities: [], highlights: [], images: [],
   description: '', contactEmail: 'trishnaproperties78@gmail.com', mapQuery: '',
@@ -178,7 +178,7 @@ export default function AdminPropertyForm() {
             </div>
             <div>
               <label className="block text-xs font-medium text-neutral-500 mb-1">Area Name</label>
-              <input value={form.area_name} onChange={e => update('area_name', e.target.value)}
+              <input value={form.areaName} onChange={e => update('areaName', e.target.value)}
                 className="w-full px-4 py-2.5 bg-neutral-50 border border-neutral-200 rounded-xl text-sm outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500" />
             </div>
             <div>

@@ -50,9 +50,9 @@ export default function PropertyDetails() {
   };
 
   const similarProperties = (() => {
-    const sameArea = properties.filter(p => p.id !== property.id && p.area_name === property.area_name);
+    const sameArea = properties.filter(p => p.id !== property.id && p.areaName === property.areaName);
     if (sameArea.length >= 3) return sameArea.slice(0, 3);
-    const sameType = properties.filter(p => p.id !== property.id && p.type === property.type && p.area_name !== property.area_name);
+    const sameType = properties.filter(p => p.id !== property.id && p.type === property.type && p.areaName !== property.areaName);
     return [...sameArea, ...sameType].slice(0, 3);
   })();
 

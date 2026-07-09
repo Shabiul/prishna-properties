@@ -28,14 +28,14 @@ export default function Listings() {
     setPropertyType((searchParams.get('type') as 'rent' | 'sale') || 'all');
   }, [searchParams]);
 
-  const { properties, fetchProperties } = usePropertyStore();
+  const { properties, fetchProperties, loading } = usePropertyStore();
   
   useEffect(() => {
     fetchProperties()
   }, [fetchProperties])
 
   const allLocations = useMemo(() => {
-    const locs = [...new Set(properties.map(p => p.area_name))];
+    const locs = [...new Set(properties.map(p => p.areaName))];
     return locs.sort();
   }, [properties]);
 
@@ -45,7 +45,9 @@ export default function Listings() {
         property.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
         property.location.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesType = propertyType === 'all' || property.type === propertyType;
-      const matchesLocation = selectedLocation === 'all' || property.area_name === selectedLocation;
+      const matchesLocation = selectedLocation === 'all' || 
+        (property.areaName && property.areaName.toLowerCase() === selectedLocation.toLowerCase()) ||
+        (property.location && property.location.toLowerCase().includes(selectedLocation.toLowerCase()));
       const matchesBedrooms = bedrooms === 'all' || property.bedrooms >= Number(bedrooms);
       return matchesSearch && matchesType && matchesLocation && matchesBedrooms;
     });
@@ -206,27 +208,36 @@ export default function Listings() {
 
       {/* Results */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-        <p className="text-sm text-neutral-500 mb-4 sm:mb-6">
-          Showing <span className="font-semibold text-navy-900">{filteredProperties.length}</span> properties
-          {selectedLocation !== 'all' ? ` in ${selectedLocation}` : ' in Bangalore'}
-        </p>
-
-        {filteredProperties.length > 0 ? (
-          <div ref={gridRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
-            {filteredProperties.map((property) => (
-              <PropertyCard key={property.id} property={property} />
-            ))}
+        {loading ? (
+          <div className="text-center py-16 sm:py-20">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-brand-500 mx-auto mb-4"></div>
+            <p className="text-sm text-neutral-500">Loading properties...</p>
           </div>
         ) : (
-          <div className="text-center py-16 sm:py-20">
-            <div className="text-4xl sm:text-5xl mb-3 sm:mb-4">🏠</div>
-            <h3 className="text-base sm:text-lg font-semibold text-navy-800 mb-1.5 sm:mb-2">No properties found</h3>
-            <p className="text-neutral-500 text-sm mb-4 sm:mb-6">Try adjusting your filters</p>
-            <button onClick={clearFilters}
-              className="text-brand-500 hover:text-brand-600 font-medium text-sm transition-colors">
-              Clear all filters
-            </button>
-          </div>
+          <>
+            <p className="text-sm text-neutral-500 mb-4 sm:mb-6">
+              Showing <span className="font-semibold text-navy-900">{filteredProperties.length}</span> properties
+              {selectedLocation !== 'all' ? ` in ${selectedLocation}` : ' in Bangalore'}
+            </p>
+
+            {filteredProperties.length > 0 ? (
+              <div ref={gridRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+                {filteredProperties.map((property) => (
+                  <PropertyCard key={property.id} property={property} />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-16 sm:py-20">
+                <div className="text-4xl sm:text-5xl mb-3 sm:mb-4">🏠</div>
+                <h3 className="text-base sm:text-lg font-semibold text-navy-800 mb-1.5 sm:mb-2">No properties found</h3>
+                <p className="text-neutral-500 text-sm mb-4 sm:mb-6">Try adjusting your filters</p>
+                <button onClick={clearFilters}
+                  className="text-brand-500 hover:text-brand-600 font-medium text-sm transition-colors">
+                  Clear all filters
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
