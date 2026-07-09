@@ -72,7 +72,7 @@ export default function SmoothScrollProvider({ children }: { children: React.Rea
       requestAnimationFrame(() => {
         if (location.hash) {
           // Scroll to anchor
-          const targetElement = document.querySelector(location.hash);
+          const targetElement = document.querySelector(location.hash) as HTMLElement | null;
           if (targetElement) {
             lenis.scrollTo(targetElement, { offset: -80 }); // Offset for fixed navbar
           }
